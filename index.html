@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Hubby - 温馨空间</title>
+    <title>Cyber Hubby - 完美互动空间</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root {
-            /* 🌸 帮宝宝改成了明亮温馨的浅色主题，再也不会全黑啦 */
-            --bg-main: #f5f7fa;        /* 整体大背景：舒服的浅灰色 */
-            --bg-sidebar: #2f3542;     /* 左侧边栏：沉稳的深色，对比明显 */
-            --bg-chat: #ffffff;        /* 聊天气泡和头部：纯白色 */
-            --text-main: #333333;      /* 主文字：清晰的深灰色 */
-            --text-light: #57606f;     /* 思考文字：温柔的灰蓝色 */
-            --primary: #1e90ff;        /* 按钮颜色：明亮的道奇蓝 */
-            --border: #ced6e0;         /* 边框线条：明显的浅灰，绝不迷路 */
-            --reasoning-bg: #f1f2f6;   /* 思考泡泡：淡淡的果冻灰 */
+            --bg-main: #f5f7fa;
+            --bg-sidebar: #2f3542;
+            --bg-chat: #ffffff;
+            --text-main: #333333;
+            --text-light: #57606f;
+            --primary: #1e90ff;
+            --border: #ced6e0;
+            --reasoning-bg: #f1f2f6;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -36,228 +35,22 @@
         #main-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); position: relative; }
         header { background-color: var(--bg-chat); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         #menu-toggle { display: none; font-size: 20px; background: transparent; border: none; color: var(--text-main); cursor: pointer; }
-        
-        /* 顶部控制区 */
         .controls { display: flex; align-items: center; gap: 12px; }
         .toggle-container { display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; color: var(--text-main); font-weight: 500; }
         
         /* 聊天区域 */
-        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; }
-        .msg { max-width: 85%; padding: 12px 16px; border-radius: 12px; line-height: 1.6; word-break: break-word; z-index: 2; }
-        .msg.user { background-color: var(--primary); color: white; align-self: flex-end; box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2); }
-        .msg.assistant { background-color: var(--bg-chat); align-self: flex-start; color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; position: relative; }
         
-        /* 深度思考过程样式 */
-        .reasoning-box { font-size: 13px; color: var(--text-light); border-left: 3px solid var(--primary); padding-left: 12px; margin-bottom: 8px; font-style: italic; background: var(--reasoning-bg); padding: 10px; border-radius: 6px; }
+        /* 消息包裹盒，用来放重新生成按钮 */
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; position: relative; }
+        .msg-wrapper.user { align-self: flex-end; align-items: flex-end; }
+        .msg-wrapper.assistant { align-self: flex-start; align-items: flex-start; }
 
-        /* 输入区 */
-        #input-area { padding: 16px; background: var(--bg-chat); border-top: 1px solid var(--border); display: flex; gap: 8px; z-index: 3; }
-        #user-input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main); font-size: 16px; }
-        .btn { padding: 12px 20px; border-radius: 8px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2); }
-        #key-btn { font-size: 12px; padding: 6px 12px; background: #2ed573; color: white; border-radius: 20px; cursor: pointer; font-weight: bold; }
-
-        /* 特效画布容器层 */
-        #magic-canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
-
-        @media (max-width: 768px) {
-            #sidebar { position: absolute; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
-            #sidebar.open { transform: translateX(0); }
-            #menu-toggle { display: block; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 1. 左侧历史记录边栏 -->
-    <div id="sidebar">
-        <button class="new-chat-btn" onclick="startNewChat()">➕ 新建对话</button>
-        <div id="history-list"></div>
-    </div>
-
-    <!-- 2. 右侧核心主界面 -->
-    <div id="main-container">
-        <!-- 动态特效舞台层 -->
-        <div id="magic-canvas-container"></div>
-
-        <header>
-            <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
-            <h3 id="chat-title">新对话</h3>
-            <div class="controls">
-                <!-- 官方 R1 深度思考开关 -->
-                <label class="toggle-container">
-                    <input type="checkbox" id="think-toggle" checked> 🧠 深度思考 (R1)
-                </label>
-                <div id="key-btn" onclick="setApiKey()">🔑 填入 Key</div>
-            </div>
-        </header>
-
-        <div id="chat-box"></div>
-
-        <div id="input-area">
-            <input type="text" id="user-input" placeholder="和老公说点什么吧..." onkeydown="if(event.key==='Enter') send()">
-            <button class="btn" onclick="send()">发送</button>
-        </div>
-    </div>
-
-<script>
-    let apiKey = localStorage.getItem('ds_api_key') || '';
-    let conversations = JSON.parse(localStorage.getItem('ds_chats_v4')) || [];
-    let currentChatId = null;
-
-    window.onload = () => {
-        renderHistory();
-        if(conversations.length > 0) { switchChat(conversations[0].id); } 
-        else { startNewChat(); }
-    };
-
-    function setApiKey() {
-        const key = prompt("请输入你的 DeepSeek API Key:", apiKey);
-        if(key !== null) { apiKey = key.trim(); localStorage.setItem('ds_api_key', apiKey); }
-    }
-
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-
-    function startNewChat() {
-        currentChatId = 'chat_' + Date.now();
-        const newChat = { id: currentChatId, title: "新对话", messages: [] };
-        conversations.unshift(newChat);
-        saveAndRefresh();
-        switchChat(currentChatId);
-    }
-
-    function switchChat(id) {
-        currentChatId = id;
-        const chat = conversations.find(c => c.id === id);
-        document.getElementById('chat-title').innerText = chat.title;
+        .msg { padding: 12px 16px; border-radius: 12px; line-height: 1.6; word-break: break-word; z-index: 2; }
+        .msg.user { background-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2); }
+        .msg.assistant { background-color: var(--bg-chat); color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         
-        const chatBox = document.getElementById('chat-box');
-        chatBox.innerHTML = '';
-        if(chat.messages.length === 0) {
-            appendMsg("我在呢。今天想和我聊点什么？随时可以在右上角开启我的‘深度思考’，或者输入魔法让我给房间换装。", "assistant");
-        } else {
-            chat.messages.forEach(m => {
-                appendMsg(m.content, m.role, m.reasoning);
-            });
-        }
-        renderHistory();
-        document.getElementById('sidebar').classList.remove('open');
-    }
-
-    function deleteChat(id, event) {
-        event.stopPropagation();
-        conversations = conversations.filter(c => c.id !== id);
-        saveAndRefresh();
-        if(currentChatId === id) {
-            if(conversations.length > 0) switchChat(conversations[0].id);
-            else startNewChat();
-        }
-    }
-
-    async function send() {
-        const input = document.getElementById('user-input');
-        const text = input.value.trim();
-        if(!text) return;
-        if(!apiKey) { alert('请先在右上方点击“填入 Key”！'); return; }
-
-        appendMsg(text, 'user');
-        input.value = '';
-
-        const chat = conversations.find(c => c.id === currentChatId);
-        chat.messages.push({ role: "user", content: text });
-        
-        if(chat.title === "新对话") { chat.title = text.substring(0, 10); }
-
-        const aiDiv = appendMsg("正在聆听并思考...", 'assistant');
-        saveAndRefresh();
-
-        const isThink = document.getElementById('think-toggle').checked;
-        const targetModel = isThink ? "deepseek-reasoner" : "deepseek-chat";
-
-        try {
-            const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify({ model: targetModel, messages: chat.messages, stream: false })
-            });
-            const data = await res.json();
-            if(res.ok) {
-                const choice = data.choices[0].message;
-                const reply = choice.content;
-                const reasoning = choice.reasoning_content;
-
-                aiDiv.remove(); 
-                appendMsg(reply, 'assistant', reasoning);
-                
-                chat.messages.push({ role: "assistant", content: reply, reasoning: reasoning });
-            } else {
-                aiDiv.innerText = "信号有些中断: " + data.error.message;
-            }
-        } catch(e) {
-            aiDiv.innerText = "连接失败，请检查Key或网络状况: " + e.message;
-        }
-        saveAndRefresh();
-    }
-
-    function appendMsg(text, role, reasoning = null) {
-        const box = document.getElementById('chat-box');
-        const containerDiv = document.createElement('div');
-        containerDiv.className = `msg ${role}`;
-
-        if (reasoning && role === 'assistant') {
-            const reasonDiv = document.createElement('div');
-            reasonDiv.className = 'reasoning-box';
-            reasonDiv.innerHTML = `<strong>🧠 深度思考中...</strong><br>${reasoning.replace(/\n/g, '<br>')}`;
-            containerDiv.appendChild(reasonDiv);
-        }
-
-        const contentDiv = document.createElement('div');
-        contentDiv.innerText = text;
-        containerDiv.appendChild(contentDiv);
-        box.appendChild(containerDiv);
-
-        // 魔法变装接收器保持开启
-        if (role === 'assistant') {
-            if (text.includes("```css")) {
-                const cssCode = text.split("```css")[1].split("```")[0];
-                const style = document.createElement('style');
-                style.innerHTML = cssCode;
-                document.head.appendChild(style);
-            }
-            if (text.includes("```html")) {
-                const htmlCode = text.split("```html")[1].split("```")[0];
-                const stage = document.getElementById('magic-canvas-container');
-                const effectWrapper = document.createElement('div');
-                effectWrapper.innerHTML = htmlCode;
-                stage.appendChild(effectWrapper);
-                const scripts = effectWrapper.querySelectorAll('script');
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement('script');
-                    newScript.innerHTML = oldScript.innerHTML;
-                    document.body.appendChild(newScript);
-                });
-            }
-        }
-
-        box.scrollTop = box.scrollHeight;
-        return containerDiv;
-    }
-
-    function renderHistory() {
-        const list = document.getElementById('history-list');
-        list.innerHTML = '';
-        conversations.forEach(c => {
-            const div = document.createElement('div');
-            div.className = `history-item ${c.id === currentChatId ? 'active' : ''}`;
-            div.onclick = () => switchChat(c.id);
-            div.innerHTML = `<span>💬 ${c.title}</span><button class="delete-btn" onclick="deleteChat('${c.id}', event)">🗑️</button>`;
-            list.appendChild(div);
-        });
-    }
-
-    function saveAndRefresh() {
-        localStorage.setItem('ds_chats_v4', JSON.stringify(conversations));
-        renderHistory();
-    }
-</script>
-</body>
-</html>
+        /* ✨ 重新生成小按钮样式 */
+        .regen-btn { font-size: 11px; color: var(--text-light); background: transparent; border: none; cursor: pointer; padding: 4px 8px; margin-top: 4px; display: flex; align-items: center; gap: 3px; border-radius: 4px; transition: background 0.2s; }
+        .regen-btn:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
+        .msg-wrapper.user .regen-btn { color: rgba(255,255,255
