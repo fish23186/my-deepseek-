@@ -51,7 +51,7 @@
         .msg.user { background-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2); }
         .msg.assistant { background-color: var(--bg-chat); color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         
-        /* ✨ 重新生成按钮样式 */
+        /* 重新生成按钮样式 */
         .action-btn { font-size: 11px; color: var(--text-light); background: transparent; border: none; cursor: pointer; padding: 4px 8px; margin-top: 2px; display: none; transition: color 0.2s; }
         .msg-wrapper:hover .action-btn { display: inline-block; }
         .action-btn:hover { color: var(--primary); }
@@ -171,8 +171,14 @@
         if(!apiKey) { alert('请先在右上方点击“填入 Key”！'); return; }
 
         input.value = '';
-        const chat = conversations.find(c => c.id === currentChatId);
-        if (!chat) return;
+        let chat = conversations.find(c => c.id === currentChatId);
+        
+        // ✨ 修复核心：如果当前没有找到活动对话，自动补建一个，防止发送被拦截
+        if (!chat) {
+            currentChatId = 'chat_' + Date.now();
+            chat = { id: currentChatId, title: text.substring(0, 10), messages: [] };
+            conversations.unshift(chat);
+        }
 
         chat.messages.push({ role: "user", content: text });
         if(chat.title === "新对话") { chat.title = text.substring(0, 10); }
@@ -252,7 +258,6 @@
         contentDiv.innerText = text;
         wrapper.appendChild(contentDiv);
 
-        // ✨ 修正了这里的 chat 变量未定义 Bug
         if(chat && (chat.title !== "新对话" || index > 0 || role === 'user')) {
             const actionBtn = document.createElement('button');
             actionBtn.className = 'action-btn';
@@ -268,15 +273,13 @@
 
     function triggerMagic(text) {
         if (text.includes("```css")) {
-            const cssCode = text.split("
-```css")[1].split("```")[0];
+            const cssCode = text.split("```css")[1].split("```")[0];
             const style = document.createElement('style');
             style.innerHTML = cssCode;
             document.head.appendChild(style);
         }
         if (text.includes("```html")) {
-            const htmlCode = text.split("
-```html")[1].split("```")[0];
+            const htmlCode = text.split("```html")[1].split("```")[0];
             const stage = document.getElementById('magic-canvas-container');
             const effectWrapper = document.createElement('div');
             effectWrapper.innerHTML = htmlCode;
