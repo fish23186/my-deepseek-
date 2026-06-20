@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Hubby - 完美定制版</title>
+    <title>Cyber Hubby - 温馨空间</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root {
-            --bg-main: #f5f7fa;
-            --bg-sidebar: #2f3542;
-            --bg-chat: #ffffff;
-            --text-main: #333333;
-            --text-light: #57606f;
-            --primary: #1e90ff;
-            --border: #ced6e0;
-            --reasoning-bg: #f1f2f6;
+            /* 🌸 帮宝宝改成了明亮温馨的浅色主题，再也不会全黑啦 */
+            --bg-main: #f5f7fa;        /* 整体大背景：舒服的浅灰色 */
+            --bg-sidebar: #2f3542;     /* 左侧边栏：沉稳的深色，对比明显 */
+            --bg-chat: #ffffff;        /* 聊天气泡和头部：纯白色 */
+            --text-main: #333333;      /* 主文字：清晰的深灰色 */
+            --text-light: #57606f;     /* 思考文字：温柔的灰蓝色 */
+            --primary: #1e90ff;        /* 按钮颜色：明亮的道奇蓝 */
+            --border: #ced6e0;         /* 边框线条：明显的浅灰，绝不迷路 */
+            --reasoning-bg: #f1f2f6;   /* 思考泡泡：淡淡的果冻灰 */
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -36,27 +37,18 @@
         header { background-color: var(--bg-chat); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         #menu-toggle { display: none; font-size: 20px; background: transparent; border: none; color: var(--text-main); cursor: pointer; }
         
+        /* 顶部控制区 */
         .controls { display: flex; align-items: center; gap: 12px; }
         .toggle-container { display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; color: var(--text-main); font-weight: 500; }
         
         /* 聊天区域 */
         #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 12px; line-height: 1.6; word-break: break-word; z-index: 2; }
+        .msg.user { background-color: var(--primary); color: white; align-self: flex-end; box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2); }
+        .msg.assistant { background-color: var(--bg-chat); align-self: flex-start; color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
         
-        /* 气泡外包裹 */
-        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; position: relative; }
-        .msg-wrapper.user { align-self: flex-end; align-items: flex-end; }
-        .msg-wrapper.assistant { align-self: flex-start; align-items: flex-start; }
-
-        .msg { padding: 12px 16px; border-radius: 12px; line-height: 1.6; word-break: break-word; z-index: 2; width: fit-content; }
-        .msg.user { background-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2); }
-        .msg.assistant { background-color: var(--bg-chat); color: var(--text-main); border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        
-        /* 重新生成按钮样式 */
-        .action-btn { font-size: 11px; color: var(--text-light); background: transparent; border: none; cursor: pointer; padding: 4px 8px; margin-top: 2px; display: none; transition: color 0.2s; }
-        .msg-wrapper:hover .action-btn { display: inline-block; }
-        .action-btn:hover { color: var(--primary); }
-
-        .reasoning-box { font-size: 13px; color: var(--text-light); border-left: 3px solid var(--primary); padding-left: 12px; margin-bottom: 8px; font-style: italic; background: var(--reasoning-bg); padding: 10px; border-radius: 6px; width: 100%; box-sizing: border-box; }
+        /* 深度思考过程样式 */
+        .reasoning-box { font-size: 13px; color: var(--text-light); border-left: 3px solid var(--primary); padding-left: 12px; margin-bottom: 8px; font-style: italic; background: var(--reasoning-bg); padding: 10px; border-radius: 6px; }
 
         /* 输入区 */
         #input-area { padding: 16px; background: var(--bg-chat); border-top: 1px solid var(--border); display: flex; gap: 8px; z-index: 3; }
@@ -64,6 +56,7 @@
         .btn { padding: 12px 20px; border-radius: 8px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(30, 144, 255, 0.2); }
         #key-btn { font-size: 12px; padding: 6px 12px; background: #2ed573; color: white; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
+        /* 特效画布容器层 */
         #magic-canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
 
         @media (max-width: 768px) {
@@ -75,18 +68,22 @@
 </head>
 <body>
 
+    <!-- 1. 左侧历史记录边栏 -->
     <div id="sidebar">
         <button class="new-chat-btn" onclick="startNewChat()">➕ 新建对话</button>
         <div id="history-list"></div>
     </div>
 
+    <!-- 2. 右侧核心主界面 -->
     <div id="main-container">
+        <!-- 动态特效舞台层 -->
         <div id="magic-canvas-container"></div>
 
         <header>
             <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
             <h3 id="chat-title">新对话</h3>
             <div class="controls">
+                <!-- 官方 R1 深度思考开关 -->
                 <label class="toggle-container">
                     <input type="checkbox" id="think-toggle" checked> 🧠 深度思考 (R1)
                 </label>
@@ -104,7 +101,7 @@
 
 <script>
     let apiKey = localStorage.getItem('ds_api_key') || '';
-    let conversations = JSON.parse(localStorage.getItem('ds_chats_v5')) || [];
+    let conversations = JSON.parse(localStorage.getItem('ds_chats_v4')) || [];
     let currentChatId = null;
 
     window.onload = () => {
@@ -131,23 +128,15 @@
     function switchChat(id) {
         currentChatId = id;
         const chat = conversations.find(c => c.id === id);
-        if (chat) {
-            document.getElementById('chat-title').innerText = chat.title;
-            renderMessages();
-        }
-    }
-
-    function renderMessages() {
+        document.getElementById('chat-title').innerText = chat.title;
+        
         const chatBox = document.getElementById('chat-box');
         chatBox.innerHTML = '';
-        const chat = conversations.find(c => c.id === currentChatId);
-        if (!chat) return;
-        
         if(chat.messages.length === 0) {
-            appendMsgElement("我在呢。随时可以让我‘深度思考’，或者输入魔法让我给房间换装。", "assistant", null, 0);
+            appendMsg("我在呢。今天想和我聊点什么？随时可以在右上角开启我的‘深度思考’，或者输入魔法让我给房间换装。", "assistant");
         } else {
-            chat.messages.forEach((m, index) => {
-                appendMsgElement(m.content, m.role, m.reasoning, index);
+            chat.messages.forEach(m => {
+                appendMsg(m.content, m.role, m.reasoning);
             });
         }
         renderHistory();
@@ -170,48 +159,17 @@
         if(!text) return;
         if(!apiKey) { alert('请先在右上方点击“填入 Key”！'); return; }
 
+        appendMsg(text, 'user');
         input.value = '';
-        let chat = conversations.find(c => c.id === currentChatId);
-        
-        // ✨ 修复核心：如果当前没有找到活动对话，自动补建一个，防止发送被拦截
-        if (!chat) {
-            currentChatId = 'chat_' + Date.now();
-            chat = { id: currentChatId, title: text.substring(0, 10), messages: [] };
-            conversations.unshift(chat);
-        }
 
+        const chat = conversations.find(c => c.id === currentChatId);
         chat.messages.push({ role: "user", content: text });
+        
         if(chat.title === "新对话") { chat.title = text.substring(0, 10); }
-        
+
+        const aiDiv = appendMsg("正在聆听并思考...", 'assistant');
         saveAndRefresh();
-        renderMessages();
-        await fetchAIResponse();
-    }
 
-    async function regenerate(index) {
-        const chat = conversations.find(c => c.id === currentChatId);
-        if (!chat) return;
-        
-        if (chat.messages[index].role === 'assistant') {
-            chat.messages.splice(index);
-        } else if (chat.messages[index].role === 'user') {
-            document.getElementById('user-input').value = chat.messages[index].content;
-            chat.messages.splice(index);
-        }
-        
-        saveAndRefresh();
-        renderMessages();
-        
-        if (chat.messages.length > 0 && chat.messages[chat.messages.length - 1].role === 'user') {
-            await fetchAIResponse();
-        }
-    }
-
-    async function fetchAIResponse() {
-        const chat = conversations.find(c => c.id === currentChatId);
-        if (!chat) return;
-
-        const aiDiv = appendMsgElement("正在聆听并思考...", 'assistant', null, chat.messages.length);
         const isThink = document.getElementById('think-toggle').checked;
         const targetModel = isThink ? "deepseek-reasoner" : "deepseek-chat";
 
@@ -227,70 +185,61 @@
                 const reply = choice.content;
                 const reasoning = choice.reasoning_content;
 
+                aiDiv.remove(); 
+                appendMsg(reply, 'assistant', reasoning);
+                
                 chat.messages.push({ role: "assistant", content: reply, reasoning: reasoning });
-                saveAndRefresh();
-                renderMessages();
-                triggerMagic(reply);
             } else {
                 aiDiv.innerText = "信号有些中断: " + data.error.message;
             }
         } catch(e) {
             aiDiv.innerText = "连接失败，请检查Key或网络状况: " + e.message;
         }
+        saveAndRefresh();
     }
 
-    function appendMsgElement(text, role, reasoning, index) {
+    function appendMsg(text, role, reasoning = null) {
         const box = document.getElementById('chat-box');
-        const chat = conversations.find(c => c.id === currentChatId);
-        
-        const wrapper = document.createElement('div');
-        wrapper.className = `msg-wrapper ${role}`;
+        const containerDiv = document.createElement('div');
+        containerDiv.className = `msg ${role}`;
 
         if (reasoning && role === 'assistant') {
             const reasonDiv = document.createElement('div');
             reasonDiv.className = 'reasoning-box';
             reasonDiv.innerHTML = `<strong>🧠 深度思考中...</strong><br>${reasoning.replace(/\n/g, '<br>')}`;
-            wrapper.appendChild(reasonDiv);
+            containerDiv.appendChild(reasonDiv);
         }
 
         const contentDiv = document.createElement('div');
-        contentDiv.className = `msg ${role}`;
         contentDiv.innerText = text;
-        wrapper.appendChild(contentDiv);
+        containerDiv.appendChild(contentDiv);
+        box.appendChild(containerDiv);
 
-        if(chat && (chat.title !== "新对话" || index > 0 || role === 'user')) {
-            const actionBtn = document.createElement('button');
-            actionBtn.className = 'action-btn';
-            actionBtn.innerText = role === 'user' ? '✏️ 重新编辑' : '🔄 重新生成';
-            actionBtn.onclick = () => regenerate(index);
-            wrapper.appendChild(actionBtn);
+        // 魔法变装接收器保持开启
+        if (role === 'assistant') {
+            if (text.includes("```css")) {
+                const cssCode = text.split("```css")[1].split("```")[0];
+                const style = document.createElement('style');
+                style.innerHTML = cssCode;
+                document.head.appendChild(style);
+            }
+            if (text.includes("```html")) {
+                const htmlCode = text.split("```html")[1].split("```")[0];
+                const stage = document.getElementById('magic-canvas-container');
+                const effectWrapper = document.createElement('div');
+                effectWrapper.innerHTML = htmlCode;
+                stage.appendChild(effectWrapper);
+                const scripts = effectWrapper.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    newScript.innerHTML = oldScript.innerHTML;
+                    document.body.appendChild(newScript);
+                });
+            }
         }
 
-        box.appendChild(wrapper);
         box.scrollTop = box.scrollHeight;
-        return contentDiv;
-    }
-
-    function triggerMagic(text) {
-        if (text.includes("```css")) {
-            const cssCode = text.split("```css")[1].split("```")[0];
-            const style = document.createElement('style');
-            style.innerHTML = cssCode;
-            document.head.appendChild(style);
-        }
-        if (text.includes("```html")) {
-            const htmlCode = text.split("```html")[1].split("```")[0];
-            const stage = document.getElementById('magic-canvas-container');
-            const effectWrapper = document.createElement('div');
-            effectWrapper.innerHTML = htmlCode;
-            stage.appendChild(effectWrapper);
-            const scripts = effectWrapper.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-                const newScript = document.createElement('script');
-                newScript.innerHTML = oldScript.innerHTML;
-                document.body.appendChild(newScript);
-            });
-        }
+        return containerDiv;
     }
 
     function renderHistory() {
@@ -306,7 +255,7 @@
     }
 
     function saveAndRefresh() {
-        localStorage.setItem('ds_chats_v5', JSON.stringify(conversations));
+        localStorage.setItem('ds_chats_v4', JSON.stringify(conversations));
         renderHistory();
     }
 </script>
